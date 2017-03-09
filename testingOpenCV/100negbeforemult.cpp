@@ -28,7 +28,7 @@ void showImageFromVectorRow(Mat images, int rowIndex, int height) {
 }
 
 bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi) {
-	
+
 	// subtract mean from test image
 	Mat outMat;
 	Mat subtracted_test;
@@ -61,8 +61,8 @@ bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi) {
 	}
 
 	// results for image
-	cout << "min: " << min << endl;
-	cout << "position: " << position << endl;
+	//cout << "min: " << min << endl;
+	//cout << "position: " << position << endl;
 
 	/*
 	positioon < numPos | positive
@@ -71,13 +71,13 @@ bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi) {
 	if (position < numPos) {
 		//temp = subtracted_matrix.row(position).clone();
 		//imshow("positive", temp.reshape(0, imageHeight));
-		cout << "positive" << endl;
+		//cout << "positive" << endl;
 		return true;
 	}
 	else {
 		//temp = subtracted_matrix.row(position).clone();
 		//imshow("negative", temp.reshape(0, imageHeight));
-		cout << "negative" << endl;
+		//cout << "negative" << endl;
 		return false;
 	}
 
@@ -85,7 +85,7 @@ bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi) {
 }
 
 double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
-	
+
 	Mat mat;
 	Mat test_image;
 	String filename;
@@ -93,13 +93,13 @@ double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
 	int posTestNum = 280; // 0-279
 	int negTestNum = 63; // 0-62
 	int numTested = posTestNum + negTestNum;
-	int correct = 0;
+	double correct = 0;
 	double accuracy = 0;
 
 	// loop through each pos test (0->posNum-1)
 	for (int i = 0; i < posTestNum; i++) {
 		filename = posTestName + to_string(i) + ".jpg";
-		cout << "reading file: " << filename << endl;
+		//cout << "reading file: " << filename << endl;
 		// get the test image
 		Mat mat = imread(filename, IMREAD_GRAYSCALE);
 
@@ -119,7 +119,7 @@ double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
 
 	for (int i = 0; i < negTestNum; i++) {
 		filename = negTestName + to_string(i) + ".jpg";
-		cout << "reading file: " << filename << endl;
+		//cout << "reading file: " << filename << endl;
 		// get the test image
 		Mat mat = imread(filename, IMREAD_GRAYSCALE);
 
@@ -156,14 +156,15 @@ int main(void)
 {
 	Mat images;
 
-	string pos_name = "images/pos/vertical-pos-img";
+	//	string pos_name = "images/pos/vertical-pos-img";
+	string pos_name = "images/pos/pos-img";
 	string neg_name = "images/neg/neg-img";
 	Mat mat; // used as temp storage when reading images
 	Mat temp;
 	string filename;
 	char c;
 
-	
+
 	int counter = 0;
 
 	///store the images into a matrix 
@@ -230,7 +231,7 @@ int main(void)
 		sum = sum + eigen.at<float>(i, 0);
 		//cout << sum << endl;
 		thresh = sum / eigsum;
-		//cout << thresh << endl;
+		//cout << "Threshold:" << thresh << endl;
 		if (thresh > 0.95)
 		{
 			k95 = i;
@@ -238,18 +239,19 @@ int main(void)
 		}
 	}
 
-	cout << "Threshold 95: vectors: " << k95 << endl;
+	cout << "Threshold. number of vectors: " << (k95 + 1) << endl;
 
 	///multiplying the subtracted matrix with eigenvectors
 	//Mat Eigencolumns = eigenVecTrans.col(0);
-	
+
 	Mat Eigenrows; Mat Eigencolumns;
+
 
 	// push k95 rows into the eigenvectors
 	for (int i = 0; i <= k95; i++) {
 		Eigenrows.push_back(eigenVec.row(i));
 	}
-	
+
 	// transform to cols (to multiply)
 	Eigencolumns = Eigenrows.t();
 
@@ -278,16 +280,16 @@ int main(void)
 	}
 
 	//normalize(subtracted_matrix, normalizedSub, 0, 255, NORM_MINMAX, CV_32FC1);
-	
+
 	// change format from CV_8U to CV_32FC1
 	subtracted_matrix.convertTo(normalizedSub, CV_32FC1);
 
 	// reduced features received from finding the product
 	Mat multi = normalizedSub * Eigencolumns;
-	
+
 
 	double result = runTest(reduced_images, Eigencolumns, multi);
-	
+
 
 	cin >> result;
 	return 0;

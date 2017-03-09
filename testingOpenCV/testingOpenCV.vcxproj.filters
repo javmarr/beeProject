@@ -24,9 +24,6 @@
     <ClCompile Include="tutorial_cascade_classifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\opencv320\sources\samples\cpp\facedetect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Classifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
