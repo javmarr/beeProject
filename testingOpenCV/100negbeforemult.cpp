@@ -12,6 +12,9 @@ int imageHeight;
 int numPos = 100; // number of positive images
 int numNeg = 100; // number of negatives images
 
+String posTestName = "images/test/pos/test-pos-img";
+String negTestName = "images/test/neg/test-neg-img";
+
 void showImageFromVector(Mat image, int height) {
 	Mat temp = image.clone();
 	imshow("Image", temp.reshape(0, height));
@@ -24,51 +27,19 @@ void showImageFromVectorRow(Mat images, int rowIndex, int height) {
 	char c = (char)waitKey(200);
 }
 
-double isBee() {
-
-}
-
-double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
-	double accuracy = 0;
-	int numTested = 0;
-	int correct = 0;
-
-	Mat test_image;
-
-	//filename = "images/pos/pos-img258.jpg";
-	String posTest = "images/test/neg/test-neg-img0.jpg";
-	String negTest = "images/test/pos/test-pos-img3.jpg";
-
-
-	// loop through each pos test
-	for (int i = 0; i < numPos; i++) {
-		sdfsfsdfsd
-	}s
-
-	// get the test image
-	Mat mat = imread(posTest, IMREAD_GRAYSCALE);
-
-	if (mat.empty())
-	{
-		cout << "empty image" << endl;
-		cout << posTest;
-	}
-	else
-	{
-		test_image.push_back(mat.reshape(0, 1));
-	}
-
+bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi) {
+	
 	// subtract mean from test image
-	Mat subtracted_test;
 	Mat outMat;
+	Mat subtracted_test;
 	subtract(test_image.row(0), reduced_images, outMat);
 	subtracted_test.push_back(outMat);
 
-	// multiple subtracted test data with eigen vector
+	// multiply subtracted test data with eigen vector
 	Mat normalizedTest;
+	Mat Test;
 	subtracted_test.convertTo(normalizedTest, CV_32FC1);
-	Mat Test = normalizedTest * Eigencolumns;
-
+	Test = normalizedTest * Eigencolumns;
 
 	// get Euclidean distance of test image and data
 	float min = -1;
@@ -76,7 +47,7 @@ double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
 	float current_value = 0;
 
 	// double dist = norm(a, b, NORM_L2);
-	for (int i = 0; i < multi.rows; i++) 
+	for (int i = 0; i < multi.rows; i++)
 	{
 		current_value = norm(multi.row(i), Test.row(0));  //abs(multi.at<float>(i,0) - Test.at<float>(0, 0));
 		if (min == -1) {
@@ -92,26 +63,91 @@ double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
 	// results for image
 	cout << "min: " << min << endl;
 	cout << "position: " << position << endl;
-	
-	/* 
-		positioon < numPos | positive
-		position >= numPos | negative
+
+	/*
+	positioon < numPos | positive
+	position >= numPos | negative
 	*/
 	if (position < numPos) {
 		//temp = subtracted_matrix.row(position).clone();
 		//imshow("positive", temp.reshape(0, imageHeight));
 		cout << "positive" << endl;
+		return true;
 	}
 	else {
 		//temp = subtracted_matrix.row(position).clone();
 		//imshow("negative", temp.reshape(0, imageHeight));
 		cout << "negative" << endl;
+		return false;
 	}
 
-	imshow("test image", mat);
+	return false;
+}
 
-	char c = (char)waitKey(0);
-	if (c == 27) {}
+double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
+	
+	Mat mat;
+	Mat test_image;
+	String filename;
+
+	int posTestNum = 280; // 0-279
+	int negTestNum = 63; // 0-62
+	int numTested = posTestNum + negTestNum;
+	int correct = 0;
+	double accuracy = 0;
+
+	// loop through each pos test (0->posNum-1)
+	for (int i = 0; i < posTestNum; i++) {
+		filename = posTestName + to_string(i) + ".jpg";
+		cout << "reading file: " << filename << endl;
+		// get the test image
+		Mat mat = imread(filename, IMREAD_GRAYSCALE);
+
+		// check for empty image
+		if (mat.empty()) {
+			cout << "empty image" << endl;
+		}
+		else {
+			test_image = mat.reshape(0, 1);
+
+			if (isBee(test_image, reduced_images, Eigencolumns, multi)) {
+				correct++;
+			}
+		}
+	}
+
+
+	for (int i = 0; i < negTestNum; i++) {
+		filename = negTestName + to_string(i) + ".jpg";
+		cout << "reading file: " << filename << endl;
+		// get the test image
+		Mat mat = imread(filename, IMREAD_GRAYSCALE);
+
+		// check for empty image
+		if (mat.empty()) {
+			cout << "empty image" << endl;
+		}
+		else {
+			test_image = mat.reshape(0, 1);
+
+			// negatives are not bees
+			if (!isBee(test_image, reduced_images, Eigencolumns, multi)) {
+				correct++;
+			}
+		}
+
+		/*
+		show test image
+		imshow("test image", mat);
+		char c = (char)waitKey(0);
+		if (c == 27) {}
+		*/
+	}
+
+
+	accuracy = correct / numTested;
+	cout << " correct: " << correct << endl;
+	cout << " accuracy: " << accuracy << endl;
 
 	return accuracy;
 }
@@ -252,7 +288,7 @@ int main(void)
 
 	double result = runTest(reduced_images, Eigencolumns, multi);
 	
-	cout << result << endl;
 
+	cin >> result;
 	return 0;
 }
