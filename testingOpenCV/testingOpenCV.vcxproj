@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="100negbeforemult.cpp" />
     <ClCompile Include="C:\opencv320\sources\samples\cpp\facedetect.cpp" />
     <ClCompile Include="Classifier.cpp" />
     <ClCompile Include="objectDetection.cpp" />
