@@ -1,7 +1,7 @@
 #ifndef ClassifierTraining
 #define ClassifierTraining
 #include "ClassifierTraining.h"
-
+#include "croppingTool.h"
 
 #include "opencv2/objdetect.hpp"
 //#include "opencv2/videoio.hpp"
@@ -12,6 +12,10 @@
 
 using namespace std;
 using namespace cv;
+
+Mat Global_multi;
+Mat Global_eigencols;
+Mat Global_reduced;
 
 int imageHeight;
 int numPos = 100; // number of positive images
@@ -26,25 +30,30 @@ void showImageFromVector(Mat image, int height) {
 	char c = (char)waitKey(200);
 }
 
+int getImageHeight()
+{
+	return imageHeight;
+}
+
 void showImageFromVectorRow(Mat images, int rowIndex, int height) {
 	Mat temp = images.row(rowIndex).clone();
 	imshow("Image" + to_string(rowIndex), temp.reshape(0, height));
 	char c = (char)waitKey(200);
 }
 
-bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi) {
+bool isBee(Mat test_image) {
 
 	// subtract mean from test image
 	Mat outMat;
 	Mat subtracted_test;
-	subtract(test_image.row(0), reduced_images, outMat);
+	subtract(test_image.row(0), Global_reduced, outMat);
 	subtracted_test.push_back(outMat);
 
 	// multiply subtracted test data with eigen vector
 	Mat normalizedTest;
 	Mat Test;
 	subtracted_test.convertTo(normalizedTest, CV_32FC1);
-	Test = normalizedTest * Eigencolumns;
+	Test = normalizedTest * Global_eigencols;
 
 	// get Euclidean distance of test image and data
 	float min = -1;
@@ -52,9 +61,9 @@ bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi) {
 	float current_value = 0;
 
 	// double dist = norm(a, b, NORM_L2);
-	for (int i = 0; i < multi.rows; i++)
+	for (int i = 0; i < Global_multi.rows; i++)
 	{
-		current_value = norm(multi.row(i), Test.row(0));  //abs(multi.at<float>(i,0) - Test.at<float>(0, 0));
+		current_value = norm(Global_multi.row(i), Test.row(0));  //abs(multi.at<float>(i,0) - Test.at<float>(0, 0));
 		if (min == -1) {
 			min = current_value;
 			position = i;
@@ -89,7 +98,7 @@ bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi) {
 	return false;
 }
 
-double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
+double runTest() {
 
 	Mat mat;
 	Mat test_image;
@@ -115,7 +124,7 @@ double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
 		else {
 			test_image = mat.reshape(0, 1);
 
-			if (isBee(test_image, reduced_images, Eigencolumns, multi)) {
+			if (isBee(test_image)) {
 				correct++;
 			}
 		}
@@ -136,7 +145,7 @@ double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
 			test_image = mat.reshape(0, 1);
 
 			// negatives are not bees
-			if (!isBee(test_image, reduced_images, Eigencolumns, multi)) {
+			if (!isBee(test_image)) {
 				correct++;
 			}
 		}
@@ -292,11 +301,10 @@ int Train()
 	// reduced features received from finding the product
 	Mat multi = normalizedSub * Eigencolumns;
 
+	Global_multi = multi;
+	Global_eigencols = Eigencolumns;
+	Global_reduced = reduced_images;
 
-	double result = runTest(reduced_images, Eigencolumns, multi);
-
-
-	cin >> result;
 	return 0;
 }
 #endif // !ClassifierTraining

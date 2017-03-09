@@ -1,6 +1,7 @@
 #ifndef Cropping
 #define Cropping
 #include "croppingTool.h"
+#include "ClassifierTraining.h"
 
 
 #include "opencv2/objdetect.hpp"
@@ -21,52 +22,8 @@ String window_name = "Capture - detection";
 int counter;
 int posCount;
 int negCount;
-//int main(void)
-//{
-//	VideoCapture capture;
-//	Mat frame;
-//	counter = 1;
-//	posCount = 0;
-//	negCount = 0;
-//	//-- 1. Load the cascades
-//	//if (!car_cascade.load(car_cascade_name)) { printf("--(!)Error loading car cascade\n"); return -1; };
-//
-//	//-- 2. Read the video stream
-//	//capture.open("../data/Bee.mp4");
-//	capture.open("20170215192927.mp4");
-//	if (!capture.isOpened()) { printf("--(!)Error opening video capture\n"); return -1; }
-//	while (capture.read(frame))
-//	{
-//		if (frame.empty())
-//		{
-//			printf(" --(!) No captured frame -- Break!");
-//			break;
-//		}
-//		//-- 3. Apply the classifier to the frame
-//		//detectAndDisplay(frame);
-//
-//		if (counter >= 897)
-//		{
-//		cropImageAndSave(frame);
-//		}
-//		counter++;
-//	
-//	}
-//	return 0;
-//}
 
 
-/* 
-* Crops and saved a portion of an image, user can choose pos or negative
-* The folders: images/pos and images/neg have to exist for this to work
-
-* Keys:
-	esc = escape
-	q = quit (basically the same as esc)
-	f = fail = negative
-	g = good = pos
-	s = skip (doesn't save it)
-*/
 void cropImageAndSave(Mat frame) {
 	Mat cleanFrame = frame.clone();
 	Mat croppedImage;
@@ -212,4 +169,53 @@ void detectAndDisplay(Mat frame)
 	else
 		cv::imshow(window_name, resized_frame);
 }
+
+Mat DetectInFrame(Mat frame)
+{
+	Mat cleanFrame = frame.clone();
+	Mat croppedImage;
+	//String cropped_window = "Cropped image";
+	//String filename = "pos/image-";
+	//string input = ""; // std string for input
+	//bool saved = false;
+	//bool forceQuit = false;
+
+
+	Rect slidingWindow = Rect(0, 0, getImageHeight(), getImageHeight());
+
+
+	// how much to much the windows (x and y)
+	int shiftXBy = slidingWindow.width / 10; int shiftYBy = slidingWindow.height / 10;
+
+	for (int row = 0; slidingWindow.y + slidingWindow.height <= frame.size().height; row++)
+	{
+		cout << "row" << endl;
+		for (int col = 0; slidingWindow.x + slidingWindow.width <= frame.size().width; col++)
+		{
+			cout << slidingWindow << endl;
+
+			// get smaller image from original frame "clean" version (no rectangle)
+
+
+			croppedImage = cleanFrame(slidingWindow);
+
+
+			// move sliding window  to the right
+			if (isBee(croppedImage))
+			{
+				rectangle(frame, slidingWindow, Scalar(255, 0, 0), 1, 8, 0);
+			}
+			slidingWindow.x += shiftXBy;
+		}
+
+
+		// reset x for new row
+		slidingWindow.x = 0;
+		// move sliding window  to the right
+		slidingWindow.y += shiftYBy;
+	}
+	return frame;
+}
+
+
 #endif

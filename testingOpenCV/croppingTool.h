@@ -10,3 +10,4 @@ using namespace cv;
 
 void detectAndDisplay(Mat frame);
 void cropImageAndSave(Mat frame);
+Mat DetectInFrame(Mat frame);

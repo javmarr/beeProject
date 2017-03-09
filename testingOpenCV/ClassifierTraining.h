@@ -9,13 +9,14 @@
 using namespace std;
 using namespace cv;
 
-
 void showImageFromVector(Mat image, int height);
 
 void showImageFromVectorRow(Mat images, int rowIndex, int height);
 
-bool isBee(Mat test_image, Mat reduced_images, Mat Eigencolumns, Mat multi);
+bool isBee(Mat test_image);
 
-double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi);
+double runTest();
+
+int getImageHeight();
 
 int Train();
