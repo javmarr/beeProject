@@ -151,11 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="100negbeforemult.cpp" />
-    <ClCompile Include="Classifier.cpp" />
-    <ClCompile Include="objectDetection.cpp" />
-    <ClCompile Include="objectTrackingTutorial.cpp" />
-    <ClCompile Include="tutorial_cascade_classifier.cpp" />
+    <ClCompile Include="ClassifierTraining.cpp" />
+    <ClCompile Include="croppingTool.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

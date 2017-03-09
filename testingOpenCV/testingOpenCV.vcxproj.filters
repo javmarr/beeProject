@@ -15,19 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="objectDetection.cpp">
+    <ClCompile Include="ClassifierTraining.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objectTrackingTutorial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tutorial_cascade_classifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Classifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="100negbeforemult.cpp">
+    <ClCompile Include="croppingTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
