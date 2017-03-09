@@ -153,6 +153,11 @@
   <ItemGroup>
     <ClCompile Include="ClassifierTraining.cpp" />
     <ClCompile Include="croppingTool.cpp" />
+    <ClCompile Include="VideoTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ClassifierTraining.h" />
+    <ClInclude Include="croppingTool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

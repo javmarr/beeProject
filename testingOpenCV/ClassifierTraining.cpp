@@ -1,3 +1,8 @@
+#ifndef ClassifierTraining
+#define ClassifierTraining
+#include "ClassifierTraining.h"
+
+
 #include "opencv2/objdetect.hpp"
 //#include "opencv2/videoio.hpp"
 #include "opencv2/highgui.hpp"
@@ -152,7 +157,7 @@ double runTest(Mat reduced_images, Mat Eigencolumns, Mat multi) {
 	return accuracy;
 }
 
-int main(void)
+int Train()
 {
 	Mat images;
 
@@ -294,3 +299,4 @@ int main(void)
 	cin >> result;
 	return 0;
 }
+#endif // !ClassifierTraining
