@@ -19,7 +19,7 @@ Mat Global_reduced;
 
 int imageHeight;
 int numPos = 100; // number of positive images
-int numNeg = 100; // number of negatives images
+int numNeg = 485; // number of negatives images
 
 String posTestName = "images/test/pos/test-pos-img";
 String negTestName = "images/test/neg/test-neg-img";
@@ -47,10 +47,6 @@ bool isBee(Mat passed_image) {
 	Mat test_image;
 	cvtColor(passed_image, test_image, cv::COLOR_BGR2GRAY);
 	test_image = test_image.reshape(0, 1);
-
-
-
-
 
 	// subtract mean from test image
 	Mat outMat;
