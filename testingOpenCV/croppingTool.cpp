@@ -172,6 +172,7 @@ void detectAndDisplay(Mat frame)
 
 Mat DetectInFrame(Mat frame)
 {
+	int slidefactor = 4;
 	Mat cleanFrame = frame.clone();
 	Mat croppedImage;
 
@@ -189,7 +190,7 @@ Mat DetectInFrame(Mat frame)
 	
 
 	// how much to much the windows (x and y)
-	int shiftXBy = slidingWindow.width / 10; int shiftYBy = slidingWindow.height / 10;
+	int shiftXBy = slidingWindow.width / slidefactor; int shiftYBy = slidingWindow.height / slidefactor;
 
 	for (int row = 0; slidingWindow.y + slidingWindow.height <= frame.size().height; row++)
 	{
