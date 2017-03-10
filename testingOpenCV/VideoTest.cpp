@@ -20,7 +20,7 @@ int main()
 
 	char c;
 	//capture.open("images/full video.mp4");
-	capture.open("images/20s-22s.mp4");
+	capture.open("images/14s-20s.mp4");
 	if (!capture.isOpened()) { printf("--(!)Error opening video capture\n");cin >> input; return -1; }
 	while (capture.read(frame))
 	{
