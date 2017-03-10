@@ -11,7 +11,13 @@ int main()
 	VideoCapture capture;
 	Mat frame;
 	Train();
+
+	/*frame = imread("images/test/neg/test-neg-img15.jpg");
+	cout << isBee(frame) << endl;*/
+
 	//runTest();
+
+
 	char c;
 	capture.open("images/20170215192927.mp4");
 	if (!capture.isOpened()) { printf("--(!)Error opening video capture\n");cin >> input; return -1; }
@@ -24,7 +30,7 @@ int main()
 			break;
 		}
 		imshow("video", DetectInFrame(frame));
-		c  = waitKey(0);
+		c  = waitKey(1);
 
 	}
 

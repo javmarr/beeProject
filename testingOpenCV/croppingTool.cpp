@@ -174,30 +174,37 @@ Mat DetectInFrame(Mat frame)
 {
 	Mat cleanFrame = frame.clone();
 	Mat croppedImage;
+
+	char c;
 	//String cropped_window = "Cropped image";
 	//String filename = "pos/image-";
 	//string input = ""; // std string for input
 	//bool saved = false;
 	//bool forceQuit = false;
 
+	/*imshow("clean frame", cleanFrame);
+	c = waitKey(0);*/
 
 	Rect slidingWindow = Rect(0, 0, getImageHeight(), getImageHeight());
-
+	
 
 	// how much to much the windows (x and y)
 	int shiftXBy = slidingWindow.width / 10; int shiftYBy = slidingWindow.height / 10;
 
 	for (int row = 0; slidingWindow.y + slidingWindow.height <= frame.size().height; row++)
 	{
-		cout << "row" << endl;
+		//cout << "row" << endl;
 		for (int col = 0; slidingWindow.x + slidingWindow.width <= frame.size().width; col++)
 		{
-			cout << slidingWindow << endl;
+			//cout << slidingWindow << endl;
 
 			// get smaller image from original frame "clean" version (no rectangle)
 
 
 			croppedImage = cleanFrame(slidingWindow);
+
+			/*imshow("cropped", croppedImage);
+			c = waitKey(0);*/
 
 
 			// move sliding window  to the right

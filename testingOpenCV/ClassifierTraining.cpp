@@ -41,7 +41,16 @@ void showImageFromVectorRow(Mat images, int rowIndex, int height) {
 	char c = (char)waitKey(200);
 }
 
-bool isBee(Mat test_image) {
+bool isBee(Mat passed_image) {
+
+	//grey scale and reshape the image
+	Mat test_image;
+	cvtColor(passed_image, test_image, cv::COLOR_BGR2GRAY);
+	test_image = test_image.reshape(0, 1);
+
+
+
+
 
 	// subtract mean from test image
 	Mat outMat;
@@ -86,6 +95,7 @@ bool isBee(Mat test_image) {
 		//temp = subtracted_matrix.row(position).clone();
 		//imshow("positive", temp.reshape(0, imageHeight));
 		//cout << "positive" << endl;
+		//cout << position << endl;
 		return true;
 	}
 	else {
