@@ -259,7 +259,7 @@ int Train()
 		}
 	}
 
-	k95 = 9;
+	k95 = 4;
 	cout << "Threshold. number of vectors: " << (k95 + 1) << endl;
 
 	///multiplying the subtracted matrix with eigenvectors
