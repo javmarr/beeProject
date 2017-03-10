@@ -35,7 +35,7 @@ void cropImageAndSave(Mat frame) {
 	bool forceQuit = false;
 
 	// how much to much the windows (x and y)
-	int shiftXBy = slidingWindow.width/10; int shiftYBy = slidingWindow.height/10;
+	int shiftXBy = slidingWindow.width/4; int shiftYBy = slidingWindow.height/4;
 
 	for (int row = 0; slidingWindow.y + slidingWindow.height <= frame.size().height && !forceQuit; row++)
 	{
@@ -189,7 +189,7 @@ Mat DetectInFrame(Mat frame)
 	
 
 	// how much to much the windows (x and y)
-	int shiftXBy = slidingWindow.width / 10; int shiftYBy = slidingWindow.height / 10;
+	int shiftXBy = slidingWindow.width / 4; int shiftYBy = slidingWindow.height / 4;
 
 	for (int row = 0; slidingWindow.y + slidingWindow.height <= frame.size().height; row++)
 	{

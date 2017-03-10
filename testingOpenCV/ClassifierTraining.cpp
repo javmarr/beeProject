@@ -48,10 +48,6 @@ bool isBee(Mat passed_image) {
 	cvtColor(passed_image, test_image, cv::COLOR_BGR2GRAY);
 	test_image = test_image.reshape(0, 1);
 
-
-
-
-
 	// subtract mean from test image
 	Mat outMat;
 	Mat subtracted_test;
