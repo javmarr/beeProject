@@ -19,7 +19,7 @@ Mat Global_reduced;
 
 int imageHeight;
 int numPos = 100; // number of positive images
-int numNeg = 485; // number of negatives images
+int numNeg = 300; // number of negatives images
 
 String posTestName = "images/test/pos/test-pos-img";
 String negTestName = "images/test/neg/test-neg-img";
@@ -259,6 +259,7 @@ int Train()
 		}
 	}
 
+	k95 = 9;
 	cout << "Threshold. number of vectors: " << (k95 + 1) << endl;
 
 	///multiplying the subtracted matrix with eigenvectors
