@@ -188,7 +188,7 @@ Mat DetectInFrame(Mat frame)
 
 	Rect slidingWindow = Rect(0, 0, getImageHeight(), getImageHeight());
 	
-
+	int box_counter = 0;
 	// how much to much the windows (x and y)
 	int shiftXBy = slidingWindow.width / slidefactor; int shiftYBy = slidingWindow.height / slidefactor;
 
@@ -212,6 +212,7 @@ Mat DetectInFrame(Mat frame)
 			if (isBee(croppedImage))
 			{
 				rectangle(frame, slidingWindow, Scalar(255, 0, 0), 1, 8, 0);
+				box_counter++;
 			}
 			slidingWindow.x += shiftXBy;
 		}
@@ -222,6 +223,7 @@ Mat DetectInFrame(Mat frame)
 		// move sliding window  to the right
 		slidingWindow.y += shiftYBy;
 	}
+	putText(frame, to_string(box_counter), cvPoint(30, 30), FONT_HERSHEY_COMPLEX_SMALL, 2, cvScalar(200, 200, 250), 1, CV_AA);
 	return frame;
 }
 
