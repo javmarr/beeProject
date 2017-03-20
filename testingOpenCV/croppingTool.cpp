@@ -1,5 +1,6 @@
 #ifndef Cropping
 #define Cropping
+#define _CRT_SECURE_NO_DEPRECATE
 #include "croppingTool.h"
 #include "ClassifierTraining.h"
 
@@ -10,6 +11,8 @@
 #include "opencv2/imgproc.hpp"
 #include <iostream>
 #include <stdio.h>
+#include <opencv2/opencv.hpp>
+
 using namespace std;
 using namespace cv;
 
@@ -22,6 +25,59 @@ String window_name = "Capture - detection";
 int counter;
 int posCount;
 int negCount;
+
+
+void nms(const vector<Rect>& srcRects,vector<cv::Rect>& resRects,float thresh)
+{
+	resRects.clear();
+
+	const size_t size = srcRects.size();
+	if (!size)
+	{
+		return;
+	}
+
+	// Sort the bounding boxes by the bottom - right y - coordinate of the bounding box
+	std::multimap<int, size_t> idxs;
+	for (size_t i = 0; i < size; ++i)
+	{
+		idxs.insert(std::pair<int, size_t>(srcRects[i].br().y, i));
+	}
+
+	// keep looping while some indexes still remain in the indexes list
+	while (idxs.size() > 0)
+	{
+		// grab the last rectangle
+		auto lastElem = --std::end(idxs);
+		const cv::Rect& rect1 = srcRects[lastElem->second];
+
+		resRects.push_back(rect1);
+
+		idxs.erase(lastElem);
+
+		for (auto pos = std::begin(idxs); pos != std::end(idxs); )
+		{
+			// grab the current rectangle
+			const cv::Rect& rect2 = srcRects[pos->second];
+
+			float intArea = (rect1 & rect2).area();
+			float unionArea = rect1.area() + rect2.area() - intArea;
+			float overlap = intArea / unionArea;
+
+			// if there is sufficient overlap, suppress the current bounding box
+			if (overlap > thresh)
+			{
+				pos = idxs.erase(pos);
+			}
+			else
+			{
+				++pos;
+			}
+		}
+	}
+}
+
+
 
 
 void cropImageAndSave(Mat frame) {
@@ -172,6 +228,9 @@ void detectAndDisplay(Mat frame)
 
 Mat DetectInFrame(Mat frame)
 {
+	vector<cv::Rect> srcRects;
+	Size size(0, 0);
+	vector<cv::Rect> resRects;
 
 	int scale = 3;
 
@@ -221,8 +280,11 @@ Mat DetectInFrame(Mat frame)
 			if (isBee(croppedImage))
 			{
 				Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * scale, slidingWindow.height * scale);
-				rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
-				box_counter++;
+
+				srcRects.push_back(scaled_sliding);
+
+				//rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
+				//box_counter++;
 			}
 			slidingWindow.x += shiftXBy;
 		}
@@ -233,7 +295,20 @@ Mat DetectInFrame(Mat frame)
 		// move sliding window  to the right
 		slidingWindow.y += shiftYBy;
 	}
+
+	nms(srcRects, resRects, 0.1f);
+	
+	for (auto r : resRects)
+	{
+		rectangle(frame, r, Scalar(0, 255, 0), 2);
+		box_counter++;
+	}
+
+
+
+
 	putText(frame, to_string(box_counter), cvPoint(30, 30), FONT_HERSHEY_COMPLEX_SMALL, 2, cvScalar(200, 200, 250), 1, CV_AA);
+	//cout << box_counter << endl;
 	return frame;
 }
 
