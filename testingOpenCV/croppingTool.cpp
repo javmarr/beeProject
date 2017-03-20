@@ -307,7 +307,7 @@ Mat DetectInFrame(Mat frame)
 
 
 
-	putText(frame, to_string(box_counter), cvPoint(30, 30), FONT_HERSHEY_COMPLEX_SMALL, 2, cvScalar(200, 200, 250), 1, CV_AA);
+	putText(frame, to_string(box_counter), cvPoint(30, 150), FONT_HERSHEY_COMPLEX_SMALL, 10, cvScalar(0, 255, 0), 1, CV_AA);
 	//cout << box_counter << endl;
 	return frame;
 }
