@@ -39,7 +39,7 @@ public:
 	{
 		Mat croppedclone = croppedImage_l.clone();
 		Rect slidingwindowclone = slidingWindow_l;
-		for (int col = 0; slidingWindow_l.x + slidingWindow_l.width <= resized_frame_l.size().width; col++)
+		for (int col = range.start; slidingWindow_l.x + slidingWindow_l.width <= range.end; col++)
 		{
 			//cout << slidingWindow << endl;
 
@@ -316,8 +316,14 @@ Mat DetectInFrame(Mat frame)
 	{
 		///attempt at parallizing 
 		/*Scanloop parallelScan(slidingWindow,croppedImage, cleanFrame, scale, resized_frame, shiftXBy, srcRects);
-		parallel_for_(Range{ slidingWindow.x + slidingWindow.width,resized_frame.size().width }, parallelScan);*/
+		parallel_for_(Range{ 0, resized_frame.size().width }, parallelScan);*/
 
+
+
+
+
+
+		///previous loop
 		//cout << "row" << endl;
 		for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
 		{
