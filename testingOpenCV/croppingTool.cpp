@@ -220,7 +220,7 @@ Mat DetectInFrame(Mat frame)
 			// move sliding window  to the right
 			if (isBee(croppedImage))
 			{
-				Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * 4, slidingWindow.height * 3);
+				Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * scale, slidingWindow.height * scale);
 				rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
 				box_counter++;
 			}
