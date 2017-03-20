@@ -172,6 +172,9 @@ void detectAndDisplay(Mat frame)
 
 Mat DetectInFrame(Mat frame)
 {
+
+	int scale = 3;
+
 	int slidefactor = 4;
 	Mat cleanFrame = frame.clone();
 	Mat croppedImage;
@@ -186,16 +189,22 @@ Mat DetectInFrame(Mat frame)
 	/*imshow("clean frame", cleanFrame);
 	c = waitKey(0);*/
 
+
+	Mat resized_frame(cvRound(frame.rows / scale), cvRound(frame.cols / scale), CV_32FC1);
+	resize(frame, resized_frame, resized_frame.size());
+
+	cleanFrame = resized_frame.clone();
+
 	Rect slidingWindow = Rect(0, 0, getImageHeight(), getImageHeight());
 	
 	int box_counter = 0;
 	// how much to much the windows (x and y)
 	int shiftXBy = slidingWindow.width / slidefactor; int shiftYBy = slidingWindow.height / slidefactor;
 
-	for (int row = 0; slidingWindow.y + slidingWindow.height <= frame.size().height; row++)
+	for (int row = 0; slidingWindow.y + slidingWindow.height <= resized_frame.size().height; row++)
 	{
 		//cout << "row" << endl;
-		for (int col = 0; slidingWindow.x + slidingWindow.width <= frame.size().width; col++)
+		for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
 		{
 			//cout << slidingWindow << endl;
 
@@ -211,7 +220,8 @@ Mat DetectInFrame(Mat frame)
 			// move sliding window  to the right
 			if (isBee(croppedImage))
 			{
-				rectangle(frame, slidingWindow, Scalar(255, 0, 0), 1, 8, 0);
+				Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * 4, slidingWindow.height * 3);
+				rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
 				box_counter++;
 			}
 			slidingWindow.x += shiftXBy;

@@ -21,6 +21,8 @@ int imageHeight;
 int numPos = 100; // number of positive images
 int numNeg = 300; // number of negatives images
 
+const int scale = 3;
+
 String posTestName = "images/test/pos/test-pos-img";
 String negTestName = "images/test/neg/test-neg-img";
 
@@ -32,7 +34,7 @@ void showImageFromVector(Mat image, int height) {
 
 int getImageHeight()
 {
-	return imageHeight;
+	return imageHeight/3;
 }
 
 void showImageFromVectorRow(Mat images, int rowIndex, int height) {
@@ -46,6 +48,16 @@ bool isBee(Mat passed_image) {
 	//grey scale and reshape the image
 	Mat test_image;
 	cvtColor(passed_image, test_image, cv::COLOR_BGR2GRAY);
+
+
+	//resizing the passed_image.  //CV_8UC1
+	//Mat resized_frame_gray(cvRound(test_image.rows / scale), cvRound(test_image.cols / scale), CV_32FC1);
+	//resize(test_image, resized_frame_gray, resized_frame_gray.size());
+
+	//setting test_image to the resized 
+	//test_image = resized_frame_gray.reshape(0, 1);
+
+
 	test_image = test_image.reshape(0, 1);
 
 	// subtract mean from test image
@@ -184,6 +196,7 @@ int Train()
 	string filename;
 	char c;
 
+	Mat resized_frame_gray;
 
 	int counter = 0;
 
@@ -197,7 +210,11 @@ int Train()
 			cout << filename;
 		}
 		else {
-			images.push_back(mat.reshape(0, 1));
+
+			resized_frame_gray.create(cvRound(mat.rows / scale), cvRound(mat.cols / scale), CV_32FC1);
+			resize(mat, resized_frame_gray, resized_frame_gray.size());
+
+			images.push_back(resized_frame_gray.reshape(0, 1));
 		}
 		//showImageFromVectorRow(images, counter, mat.rows);
 	}
@@ -290,7 +307,10 @@ int Train()
 		}
 		else {
 			// subtract the mean from the negative image before adding
-			subtract(mat.reshape(0, 1), reduced_images, temp2);
+			resized_frame_gray.create(cvRound(mat.rows / scale), cvRound(mat.cols / scale), CV_32FC1);
+			resize(mat, resized_frame_gray, resized_frame_gray.size());
+
+			subtract(resized_frame_gray.reshape(0, 1), reduced_images, temp2);
 			subtracted_matrix.push_back(temp2);
 		}
 
