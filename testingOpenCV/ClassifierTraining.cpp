@@ -34,7 +34,7 @@ void showImageFromVector(Mat image, int height) {
 
 int getImageHeight()
 {
-	return imageHeight/3;
+	return imageHeight/scale;
 }
 
 void showImageFromVectorRow(Mat images, int rowIndex, int height) {
