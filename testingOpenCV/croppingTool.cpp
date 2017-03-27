@@ -27,6 +27,58 @@ int posCount;
 int negCount;
 
 
+class Scanloop : public ParallelLoopBody
+{
+public:
+	Scanloop(Rect slidingWindow, Mat &croppedImage, Mat &cleanFrame, int scale, Mat &resized_frame, int shiftXBy, vector<Rect>& srcRects)
+		: slidingWindow_l(slidingWindow_l), croppedImage_l(croppedImage), cleanFrame_l(cleanFrame), scale_l(scale), resized_frame_l(resized_frame), shiftXBy_l(shiftXBy), srcRects_l(srcRects)
+	{ 
+	}
+
+	void operator()(const Range& range) const override
+	{
+		Mat croppedclone = croppedImage_l.clone();
+		Rect slidingwindowclone = slidingWindow_l;
+		for (int col = 0; slidingWindow_l.x + slidingWindow_l.width <= resized_frame_l.size().width; col++)
+		{
+			//cout << slidingWindow << endl;
+
+			
+			// get smaller image from original frame "clean" version (no rectangle)
+			croppedclone = cleanFrame_l(slidingWindow_l);
+
+			/*imshow("cropped", croppedImage);
+			c = waitKey(0);*/
+
+			// check if there is a bee in the cropped area
+			if (isBee(croppedImage_l))
+			{
+				// move sliding window  to the right
+				Rect scaled_sliding = Rect(slidingWindow_l.x * scale_l, slidingWindow_l.y * scale_l, slidingWindow_l.width * scale_l, slidingWindow_l.height * scale_l);
+
+				// save the rectangles 
+				srcRects_l .push_back(scaled_sliding);
+
+				//rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
+				//box_counter++;
+			}
+			slidingwindowclone.x += shiftXBy_l;
+		}
+	}
+
+
+
+private:
+	Rect slidingWindow_l;
+	Mat croppedImage_l;
+	Mat cleanFrame_l;
+	int scale_l;
+	Mat resized_frame_l;
+	int shiftXBy_l;
+	vector<Rect>& srcRects_l;
+};
+
+
 void nms(const vector<Rect>& srcRects,vector<cv::Rect>& resRects,float thresh)
 {
 	resRects.clear();
@@ -262,25 +314,28 @@ Mat DetectInFrame(Mat frame)
 
 	for (int row = 0; slidingWindow.y + slidingWindow.height <= resized_frame.size().height; row++)
 	{
+		///attempt at parallizing 
+		/*Scanloop parallelScan(slidingWindow,croppedImage, cleanFrame, scale, resized_frame, shiftXBy, srcRects);
+		parallel_for_(Range{ slidingWindow.x + slidingWindow.width,resized_frame.size().width }, parallelScan);*/
+
 		//cout << "row" << endl;
 		for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
 		{
 			//cout << slidingWindow << endl;
 
 			// get smaller image from original frame "clean" version (no rectangle)
-
-
 			croppedImage = cleanFrame(slidingWindow);
 
 			/*imshow("cropped", croppedImage);
 			c = waitKey(0);*/
 
-
-			// move sliding window  to the right
+			// check if there is a bee in the cropped area
 			if (isBee(croppedImage))
-			{
+			{	
+				// move sliding window  to the right
 				Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * scale, slidingWindow.height * scale);
 
+				// save the rectangles 
 				srcRects.push_back(scaled_sliding);
 
 				//rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
@@ -296,8 +351,10 @@ Mat DetectInFrame(Mat frame)
 		slidingWindow.y += shiftYBy;
 	}
 
+	// perform non-maximum suppression (reduce rect)
 	nms(srcRects, resRects, 0.1f);
 	
+	// draw the rectangles
 	for (auto r : resRects)
 	{
 		rectangle(frame, r, Scalar(0, 255, 0), 2);
@@ -306,7 +363,7 @@ Mat DetectInFrame(Mat frame)
 
 
 
-
+	// display rect number
 	putText(frame, to_string(box_counter), cvPoint(30, 150), FONT_HERSHEY_COMPLEX_SMALL, 10, cvScalar(0, 255, 0), 1, CV_AA);
 	//cout << box_counter << endl;
 	return frame;
