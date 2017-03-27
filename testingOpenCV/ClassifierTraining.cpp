@@ -19,7 +19,7 @@ Mat Global_reduced;
 
 int imageHeight;
 int numPos = 100; // number of positive images
-int numNeg = 300; // number of negatives images
+int numNeg = 998; // number of negatives images
 
 const int scale = 3;
 
@@ -47,8 +47,12 @@ bool isBee(Mat passed_image) {
 
 	//grey scale and reshape the image
 	Mat test_image;
+    
+    double t1 = (double) getTickCount();
 	cvtColor(passed_image, test_image, cv::COLOR_BGR2GRAY);
-
+    
+    t1 = ((double) getTickCount() - t1) / getTickFrequency();
+    cout << "cvtColor: " << t1 << " s" << endl;
 
 	//resizing the passed_image.  //CV_8UC1
 	//Mat resized_frame_gray(cvRound(test_image.rows / scale), cvRound(test_image.cols / scale), CV_32FC1);
@@ -69,14 +73,21 @@ bool isBee(Mat passed_image) {
 	// multiply subtracted test data with eigen vector
 	Mat normalizedTest;
 	Mat Test;
+    
 	subtracted_test.convertTo(normalizedTest, CV_32FC1);
-	Test = normalizedTest * Global_eigencols;
-
+    
+    t1 = (double) getTickCount();
+    Test = normalizedTest * Global_eigencols;
+    t1 = ((double) getTickCount() - t1) / getTickFrequency();
+    cout << "Multiply: " << t1 << " s" << endl;
+    
 	// get Euclidean distance of test image and data
 	float min = -1;
 	int position = -1;
 	float current_value = 0;
 
+    
+    t1 = (double) getTickCount();
 	// double dist = norm(a, b, NORM_L2);
 	for (int i = 0; i < Global_multi.rows; i++)
 	{
@@ -90,7 +101,9 @@ bool isBee(Mat passed_image) {
 			position = i;
 		}
 	}
-
+    t1 = ((double) getTickCount() - t1) / getTickFrequency();
+    cout << "euclidean dist: " << t1 << " s" << endl;
+    
 	// results for image
 	//cout << "min: " << min << endl;
 	//cout << "position: " << position << endl;
