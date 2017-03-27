@@ -19,7 +19,7 @@ Mat Global_reduced;
 
 int imageHeight;
 int numPos = 100; // number of positive images
-int numNeg = 300; // number of negatives images
+int numNeg = 998; // number of negatives images
 
 const int scale = 3;
 
