@@ -31,33 +31,34 @@ class Scanloop : public ParallelLoopBody
 {
 public:
 	Scanloop(Rect slidingWindow, Mat &croppedImage, Mat &cleanFrame, int scale, Mat &resized_frame, int shiftXBy, vector<Rect>& srcRects)
-		: slidingWindow_l(slidingWindow_l), croppedImage_l(croppedImage), cleanFrame_l(cleanFrame), scale_l(scale), resized_frame_l(resized_frame), shiftXBy_l(shiftXBy), srcRects_l(srcRects)
+		: slidingWindow_l(slidingWindow), croppedImage_l(croppedImage), cleanFrame_l(cleanFrame), scale_l(scale), resized_frame_l(resized_frame), shiftXBy_l(shiftXBy), srcRects_l(srcRects)
 	{ 
 	}
 
 	void operator()(const Range& range) const override
 	{
-		Mat croppedclone = croppedImage_l.clone();
+		Mat croppedclone;
 		Rect slidingwindowclone = slidingWindow_l;
-		for (int col = range.start; slidingWindow_l.x + slidingWindow_l.width <= range.end; col++)
+		Rect scaled_sliding;
+		for (int col = range.start; slidingwindowclone.x + slidingwindowclone.width <= range.end; col++)
 		{
 			//cout << slidingWindow << endl;
 
 			
 			// get smaller image from original frame "clean" version (no rectangle)
-			croppedclone = cleanFrame_l(slidingWindow_l);
+			croppedclone = cleanFrame_l(slidingwindowclone);
 
 			/*imshow("cropped", croppedImage);
 			c = waitKey(0);*/
 
 			// check if there is a bee in the cropped area
-			if (isBee(croppedImage_l))
+			if (isBee(croppedclone))
 			{
 				// move sliding window  to the right
-				Rect scaled_sliding = Rect(slidingWindow_l.x * scale_l, slidingWindow_l.y * scale_l, slidingWindow_l.width * scale_l, slidingWindow_l.height * scale_l);
+				scaled_sliding = Rect(slidingwindowclone.x * scale_l, slidingwindowclone.y * scale_l, slidingwindowclone.width * scale_l, slidingwindowclone.height * scale_l);
 
 				// save the rectangles 
-				srcRects_l .push_back(scaled_sliding);
+				srcRects_l.push_back(scaled_sliding);
 
 				//rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
 				//box_counter++;
@@ -316,7 +317,7 @@ Mat DetectInFrame(Mat frame)
 	{
 		///attempt at parallizing 
 		/*Scanloop parallelScan(slidingWindow,croppedImage, cleanFrame, scale, resized_frame, shiftXBy, srcRects);
-		parallel_for_(Range{ 0, resized_frame.size().width }, parallelScan);*/
+		parallel_for_(Range{ 0, resized_frame.size().width }, parallelScan,1);*/
 
 
 
@@ -324,7 +325,7 @@ Mat DetectInFrame(Mat frame)
 
 
 		///previous loop
-		//cout << "row" << endl;
+		////cout << "row" << endl;
 		for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
 		{
 			//cout << slidingWindow << endl;
