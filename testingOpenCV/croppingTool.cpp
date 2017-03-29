@@ -322,8 +322,6 @@ Mat DetectInFrame(Mat frame)
 
 
 
-
-
 		///previous loop
 		////cout << "row" << endl;
 		for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
@@ -371,7 +369,12 @@ Mat DetectInFrame(Mat frame)
 
 
 	// display rect number
-	putText(frame, to_string(box_counter), cvPoint(30, 150), FONT_HERSHEY_COMPLEX_SMALL, 10, cvScalar(0, 255, 0), 1, CV_AA);
+    // total (green)
+	putText(frame, to_string(box_counter), cvPoint(30, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(0, 255, 0), 5, CV_AA);
+    // entering (blue)
+    putText(frame, to_string(box_counter), cvPoint(150, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(255, 0, 0), 5, CV_AA);
+    // leaving (red)
+    putText(frame, to_string(box_counter), cvPoint(270, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(0, 0, 255), 5, CV_AA);
 	//cout << box_counter << endl;
 	return frame;
 }
