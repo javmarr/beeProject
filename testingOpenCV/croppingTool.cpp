@@ -400,10 +400,10 @@ Mat DetectInFrame(Mat frame)
 	// display rect number
     // total (green)
 	putText(frame, to_string(box_counter), cvPoint(30, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(0, 255, 0), 5, CV_AA);
-    // entering (blue)
-    putText(frame, to_string(entering_counter), cvPoint(150, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(255, 0, 0), 5, CV_AA);
     // leaving (red)
-    putText(frame, to_string(leaving_counter), cvPoint(270, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(0, 0, 255), 5, CV_AA);
+    putText(frame, to_string(leaving_counter), cvPoint(150, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(0, 0, 255), 5, CV_AA);
+    // entering (blue)
+    putText(frame, to_string(entering_counter), cvPoint(270, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(255, 0, 0), 5, CV_AA);
 	//cout << box_counter << endl;
 	return frame;
 }
