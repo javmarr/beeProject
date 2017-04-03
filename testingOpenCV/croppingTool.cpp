@@ -316,8 +316,8 @@ Mat DetectInFrame(Mat frame)
 	for (int row = 0; slidingWindow.y + slidingWindow.height <= resized_frame.size().height; row++)
 	{
 		///attempt at parallizing 
-		/*Scanloop parallelScan(slidingWindow,croppedImage, cleanFrame, scale, resized_frame, shiftXBy, srcRects);
-		parallel_for_(Range{ 0, resized_frame.size().width }, parallelScan,1);*/
+		Scanloop parallelScan(slidingWindow,croppedImage, cleanFrame, scale, resized_frame, shiftXBy, srcRects);
+		parallel_for_(Range( 0, resized_frame.size().width ), parallelScan);
 
 
 
@@ -326,30 +326,30 @@ Mat DetectInFrame(Mat frame)
 
 		///previous loop
 		////cout << "row" << endl;
-		for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
-		{
-			//cout << slidingWindow << endl;
+		//for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
+		//{
+		//	//cout << slidingWindow << endl;
 
-			// get smaller image from original frame "clean" version (no rectangle)
-			croppedImage = cleanFrame(slidingWindow);
+		//	// get smaller image from original frame "clean" version (no rectangle)
+		//	croppedImage = cleanFrame(slidingWindow);
 
-			/*imshow("cropped", croppedImage);
-			c = waitKey(0);*/
+		//	/*imshow("cropped", croppedImage);
+		//	c = waitKey(0);*/
 
-			// check if there is a bee in the cropped area
-			if (isBee(croppedImage))
-			{	
-				// move sliding window  to the right
-				Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * scale, slidingWindow.height * scale);
+		//	// check if there is a bee in the cropped area
+		//	if (isBee(croppedImage))
+		//	{	
+		//		// move sliding window  to the right
+		//		Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * scale, slidingWindow.height * scale);
 
-				// save the rectangles 
-				srcRects.push_back(scaled_sliding);
+		//		// save the rectangles 
+		//		srcRects.push_back(scaled_sliding);
 
-				//rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
-				//box_counter++;
-			}
-			slidingWindow.x += shiftXBy;
-		}
+		//		//rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
+		//		//box_counter++;
+		//	}
+		//	slidingWindow.x += shiftXBy;
+		//}
 
 
 		// reset x for new row
