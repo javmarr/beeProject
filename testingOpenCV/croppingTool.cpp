@@ -316,38 +316,38 @@ Mat DetectInFrame(Mat frame)
 	for (int row = 0; slidingWindow.y + slidingWindow.height <= resized_frame.size().height; row++)
 	{
 		///attempt at parallizing 
-		Scanloop parallelScan(slidingWindow,croppedImage, cleanFrame, scale, resized_frame, shiftXBy, srcRects);
-		parallel_for_(Range( 0, resized_frame.size().width ), parallelScan);
+		//Scanloop parallelScan(slidingWindow,croppedImage, cleanFrame, scale, resized_frame, shiftXBy, srcRects);
+		//parallel_for_(Range( 0, resized_frame.size().width ), parallelScan);
 
 
 
 
 		///previous loop
-		////cout << "row" << endl;
-		//for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
-		//{
-		//	//cout << slidingWindow << endl;
+		//cout << "row" << endl;
+		for (int col = 0; slidingWindow.x + slidingWindow.width <= resized_frame.size().width; col++)
+		{
+			//cout << slidingWindow << endl;
 
-		//	// get smaller image from original frame "clean" version (no rectangle)
-		//	croppedImage = cleanFrame(slidingWindow);
+			// get smaller image from original frame "clean" version (no rectangle)
+			croppedImage = cleanFrame(slidingWindow);
 
-		//	/*imshow("cropped", croppedImage);
-		//	c = waitKey(0);*/
+			/*imshow("cropped", croppedImage);
+			c = waitKey(0);*/
 
-		//	// check if there is a bee in the cropped area
-		//	if (isBee(croppedImage))
-		//	{	
-		//		// move sliding window  to the right
-		//		Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * scale, slidingWindow.height * scale);
+			// check if there is a bee in the cropped area
+			if (isBee(croppedImage))
+			{	
+				// move sliding window  to the right
+				Rect scaled_sliding = Rect(slidingWindow.x * scale, slidingWindow.y * scale, slidingWindow.width * scale, slidingWindow.height * scale);
 
-		//		// save the rectangles 
-		//		srcRects.push_back(scaled_sliding);
+				// save the rectangles 
+				srcRects.push_back(scaled_sliding);
 
-		//		//rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
-		//		//box_counter++;
-		//	}
-		//	slidingWindow.x += shiftXBy;
-		//}
+				//rectangle(frame, scaled_sliding, Scalar(255, 0, 0), 1, 8, 0);
+				//box_counter++;
+			}
+			slidingWindow.x += shiftXBy;
+		}
 
 
 		// reset x for new row
@@ -359,22 +359,51 @@ Mat DetectInFrame(Mat frame)
 	// perform non-maximum suppression (reduce rect)
 	nms(srcRects, resRects, 0.1f);
 	
+	int leaving_counter = 0;
+	int entering_counter = 0;
+	Rect leaving_box = Rect(0, 0, frame.size().width, 375);
+	Rect entering_box = Rect(0, frame.size().height - 400, frame.size().width, 375);
+	Rect intersect_entering;
+	Rect intersect_leaving;
 	// draw the rectangles
 	for (auto r : resRects)
 	{
 		rectangle(frame, r, Scalar(0, 255, 0), 2);
+		/*if (r.y <= (leaving_box.y + leaving_box.size().height))
+		{
+			leaving_counter++;
+		}
+		if (r.y >= entering_box.y)
+		{
+			entering_counter++;
+		}*/
+		intersect_entering = r & entering_box;
+		intersect_leaving = r & leaving_box;
+
+		if (intersect_entering.area() > (r.height*r.width) / 2)
+		{
+			entering_counter++;
+		}
+		if (intersect_leaving.area() > (r.height*r.width) / 2)
+		{
+			leaving_counter++;
+		}
+
 		box_counter++;
 	}
 
 
 
+	rectangle(frame, leaving_box, Scalar(0, 0, 255), 2);
+	rectangle(frame, entering_box, Scalar(255, 0, 0), 2);
+
 	// display rect number
     // total (green)
 	putText(frame, to_string(box_counter), cvPoint(30, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(0, 255, 0), 5, CV_AA);
     // entering (blue)
-    putText(frame, to_string(box_counter), cvPoint(150, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(255, 0, 0), 5, CV_AA);
+    putText(frame, to_string(entering_counter), cvPoint(150, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(255, 0, 0), 5, CV_AA);
     // leaving (red)
-    putText(frame, to_string(box_counter), cvPoint(270, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(0, 0, 255), 5, CV_AA);
+    putText(frame, to_string(leaving_counter), cvPoint(270, 150), FONT_HERSHEY_SIMPLEX, 6, cvScalar(0, 0, 255), 5, CV_AA);
 	//cout << box_counter << endl;
 	return frame;
 }
