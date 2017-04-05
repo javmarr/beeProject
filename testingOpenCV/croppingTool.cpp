@@ -26,6 +26,9 @@ int counter;
 int posCount;
 int negCount;
 
+bool prev_set;
+vector<cv::Rect> prev_Rects;
+vector<string> direction_Rects;
 
 class Scanloop : public ParallelLoopBody
 {
@@ -79,6 +82,19 @@ private:
 	vector<Rect>& srcRects_l;
 };
 
+bool compare_rec(Rect prev, Rect current, double threshold)
+{
+	Rect inter = prev & current;
+
+	if (inter.area() >= threshold)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 void nms(const vector<Rect>& srcRects,vector<cv::Rect>& resRects,float thresh)
 {
@@ -365,10 +381,80 @@ Mat DetectInFrame(Mat frame)
 	Rect entering_box = Rect(0, frame.size().height - 400, frame.size().width, 375);
 	Rect intersect_entering;
 	Rect intersect_leaving;
+	bool intersecting = false;
+	double threshold = 0;
+	string direct = "";
+
+	direction_Rects.clear();
+
+	if (prev_Rects.size() >= 1)
+	{
+		prev_set = true;
+
+		//compare the prev and current recs
+		for (auto r : resRects)
+		{
+			threshold = (r.height*r.width) / 2;
+			for (int i = 0; i < prev_Rects.size(); i++)
+			{
+				intersecting = compare_rec(prev_Rects.at(i), r, threshold);
+				if (intersecting)
+				{
+					//set the directions
+					if (r.x > prev_Rects.at(i).x)
+					{
+						direct = "right ";
+					}
+					else if (r.x < prev_Rects.at(i).x)
+					{
+						direct = "left ";
+					}
+					else
+					{
+						direct = " ";
+					}
+
+					if (r.y > prev_Rects.at(i).y)
+					{ 
+						direct = direct + "down";
+					}
+					else if (r.y < prev_Rects.at(i).y)
+					{
+						direct = direct + "up";
+					}
+					else
+					{
+						direct = direct + " ";
+					}
+
+					putText(frame, direct, cvPoint(r.x, r.y+40), FONT_HERSHEY_SIMPLEX, 1, cvScalar(255, 255, 0), 5, CV_AA);
+					direction_Rects.push_back(direct);
+					direct = "";
+					break;
+				}
+			}
+		}
+		
+
+		//display the direction on bee
+	}
+	else
+	{
+		prev_set = false;
+	}
+	prev_Rects.clear();
+
 	// draw the rectangles
 	for (auto r : resRects)
 	{
+
+		//push the rectangles into previous set as this is the first frame
+		prev_Rects.push_back(r);
+
+
 		rectangle(frame, r, Scalar(0, 255, 0), 2);
+
+		///option 1 (relative y position) for leaving and entering
 		/*if (r.y <= (leaving_box.y + leaving_box.size().height))
 		{
 			leaving_counter++;
@@ -377,9 +463,11 @@ Mat DetectInFrame(Mat frame)
 		{
 			entering_counter++;
 		}*/
+
 		intersect_entering = r & entering_box;
 		intersect_leaving = r & leaving_box;
 
+		///option 2 (intersection) for leaving and entering
 		if (intersect_entering.area() > (r.height*r.width) / 2)
 		{
 			entering_counter++;
