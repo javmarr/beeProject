@@ -398,32 +398,33 @@ Mat DetectInFrame(Mat frame)
 
 
 
-
+		//for every previous rectangle
 		for (int i = 0; i < prev_Rects.size(); i++)
 		{
+			//for every current rectangle
 			for (auto r : resRects)
 			{
+				//check if there is an intersecting. if an is found break
 				threshold = (r.height*r.width) / 2;
 				intersecting = compare_rec(prev_Rects.at(i), r, threshold);
 				if (intersecting)
 					break;
 			}
+
+			//if the previous rectangle no longer appears in the current rectangles
 			if (!intersecting)
 			{
-				if (direction_Rects.at(i).find("up") != std::string::npos)
+				//if it was previously in leaving, it left
+				if (compare_rec(prev_Rects.at(i), leaving_box, threshold))
 				{
-					if (compare_rec(prev_Rects.at(i), leaving_box, threshold))
-					{
-						cout << "1 left" << endl;
-					}
+					cout << "left" << endl;
 				}
-				else if (direction_Rects.at(i).find("down") != std::string::npos)
+				//else, if it was peviously in entering, it left
+				else if (compare_rec(prev_Rects.at(i), entering_box, threshold))
 				{
-					if (compare_rec(prev_Rects.at(i), entering_box, threshold))
-					{
-						cout << "1 entered" << endl;
-					}
+					cout << "entered" << endl;
 				}
+				
 			}
 		}
 
@@ -431,83 +432,83 @@ Mat DetectInFrame(Mat frame)
 
 
 		//compare the prev and current recs
-		for (auto r : resRects)
-		{
-			threshold = (r.height*r.width) / 2;
-			for (int i = 0; i < prev_Rects.size(); i++)
-			{
-				intersecting = compare_rec(prev_Rects.at(i), r, threshold);
-				if (intersecting)
-				{
-					//set the directions
-					if (r.x > prev_Rects.at(i).x)
-					{
-						if (direction_Rects.at(i).find("left") != std::string::npos)
-						{
-							direct = "switch_horizontal ";
-						}
-						else
-						{
-							direct = "right ";
-						}
-					}
-					else if (r.x < prev_Rects.at(i).x)
-					{
-						if (direction_Rects.at(i).find("right") != std::string::npos)
-						{
-							direct = "switch_horizontal ";
-						}
-						else
-						{
-							direct = "left ";
-						}
-					}
-					else
-					{
-						//direct = " ";
-						direct = direction_Rects.at(i).substr(0,direction_Rects.at(i).find(" ") + 1);
-					}
+		//for (auto r : resRects)
+		//{
+		//	threshold = (r.height*r.width) / 2;
+		//	for (int i = 0; i < prev_Rects.size(); i++)
+		//	{
+		//		intersecting = compare_rec(prev_Rects.at(i), r, threshold);
+		//		if (intersecting)
+		//		{
+		//			//set the directions
+		//			if (r.x > prev_Rects.at(i).x)
+		//			{
+		//				if (direction_Rects.at(i).find("left") != std::string::npos)
+		//				{
+		//					direct = "switch_horizontal ";
+		//				}
+		//				else
+		//				{
+		//					direct = "right ";
+		//				}
+		//			}
+		//			else if (r.x < prev_Rects.at(i).x)
+		//			{
+		//				if (direction_Rects.at(i).find("right") != std::string::npos)
+		//				{
+		//					direct = "switch_horizontal ";
+		//				}
+		//				else
+		//				{
+		//					direct = "left ";
+		//				}
+		//			}
+		//			else
+		//			{
+		//				//direct = " ";
+		//				direct = direction_Rects.at(i).substr(0,direction_Rects.at(i).find(" ") + 1);
+		//			}
 
-					if (r.y > prev_Rects.at(i).y)
-					{ 
-						if (direction_Rects.at(i).find("up") != std::string::npos)
-						{
-							direct = direct + "switch_vertical";
-						}
-						else
-						{
-							direct = direct + "down";
-						}
-					}
-					else if (r.y < prev_Rects.at(i).y)
-					{
-						if (direction_Rects.at(i).find("down") != std::string::npos)
-						{
-							direct = direct + "switch_vertical";
-						}
-						else
-						{
-							direct = direct + "up";
+		//			if (r.y > prev_Rects.at(i).y)
+		//			{ 
+		//				if (direction_Rects.at(i).find("up") != std::string::npos)
+		//				{
+		//					direct = direct + "switch_vertical";
+		//				}
+		//				else
+		//				{
+		//					direct = direct + "down";
+		//				}
+		//			}
+		//			else if (r.y < prev_Rects.at(i).y)
+		//			{
+		//				if (direction_Rects.at(i).find("down") != std::string::npos)
+		//				{
+		//					direct = direct + "switch_vertical";
+		//				}
+		//				else
+		//				{
+		//					direct = direct + "up";
 
-						}
-					}
-					else
-					{
-						direct = direct + direction_Rects.at(i).substr(direction_Rects.at(i).find(" ") + 1);
-					}
+		//				}
+		//			}
+		//			else
+		//			{
+		//				direct = direct + direction_Rects.at(i).substr(direction_Rects.at(i).find(" ") + 1);
+		//			}
 
-					//display the direction on bee
-					putText(frame, direct, cvPoint(r.x, r.y+40), FONT_HERSHEY_SIMPLEX, 1, cvScalar(255, 255, 0), 5, CV_AA);
-					direction_Current.push_back(direct);
-					direct = "";
-					break;
-				}
-			}
-		}
+		//			//display the direction on bee
+		//			putText(frame, direct, cvPoint(r.x, r.y+40), FONT_HERSHEY_SIMPLEX, 1, cvScalar(255, 255, 0), 5, CV_AA);
+		//			direction_Current.push_back(direct);
+		//			direct = "";
+		//			break;
+		//		}
+		//	}
+		//}
 		
-		direction_Rects.clear();
+		/*direction_Rects.clear();
 		direction_Rects = direction_Current;
-		direction_Current.clear();
+		direction_Current.clear();*/
 	}
 	//else
 	//{
