@@ -26,9 +26,10 @@ int counter;
 int posCount;
 int negCount;
 
-bool prev_set;
+//bool prev_set;
 vector<cv::Rect> prev_Rects;
 vector<string> direction_Rects;
+vector<string> direction_Current;
 
 class Scanloop : public ParallelLoopBody
 {
@@ -385,11 +386,15 @@ Mat DetectInFrame(Mat frame)
 	double threshold = 0;
 	string direct = "";
 
-	direction_Rects.clear();
+	//direction_Rects.clear();
 
 	if (prev_Rects.size() >= 1)
 	{
-		prev_set = true;
+		while(prev_Rects.size() > direction_Rects.size())
+		{
+			direction_Rects.push_back("");
+		}
+		/*prev_set = true;*/
 
 		//compare the prev and current recs
 		for (auto r : resRects)
@@ -403,45 +408,77 @@ Mat DetectInFrame(Mat frame)
 					//set the directions
 					if (r.x > prev_Rects.at(i).x)
 					{
-						direct = "right ";
+						if (direction_Rects.at(i).find("left") != std::string::npos)
+						{
+							direct = "switch_horizontal ";
+						}
+						else
+						{
+							direct = "right ";
+						}
 					}
 					else if (r.x < prev_Rects.at(i).x)
 					{
-						direct = "left ";
+						if (direction_Rects.at(i).find("right") != std::string::npos)
+						{
+							direct = "switch_horizontal ";
+						}
+						else
+						{
+							direct = "left ";
+						}
 					}
 					else
 					{
-						direct = " ";
+						//direct = " ";
+						direct = direction_Rects.at(i).substr(0,direction_Rects.at(i).find(" ") + 1);
 					}
 
 					if (r.y > prev_Rects.at(i).y)
 					{ 
-						direct = direct + "down";
+						if (direction_Rects.at(i).find("up") != std::string::npos)
+						{
+							direct = direct + "switch_vertical";
+						}
+						else
+						{
+							direct = direct + "down";
+						}
 					}
 					else if (r.y < prev_Rects.at(i).y)
 					{
-						direct = direct + "up";
+						if (direction_Rects.at(i).find("down") != std::string::npos)
+						{
+							direct = direct + "switch_vertical";
+						}
+						else
+						{
+							direct = direct + "up";
+
+						}
 					}
 					else
 					{
-						direct = direct + " ";
+						direct = direct + direction_Rects.at(i).substr(direction_Rects.at(i).find(" ") + 1);
 					}
 
+					//display the direction on bee
 					putText(frame, direct, cvPoint(r.x, r.y+40), FONT_HERSHEY_SIMPLEX, 1, cvScalar(255, 255, 0), 5, CV_AA);
-					direction_Rects.push_back(direct);
+					direction_Current.push_back(direct);
 					direct = "";
 					break;
 				}
 			}
 		}
 		
-
-		//display the direction on bee
+		direction_Rects.clear();
+		direction_Rects = direction_Current;
+		direction_Current.clear();
 	}
-	else
-	{
-		prev_set = false;
-	}
+	//else
+	//{
+	//	prev_set = false;
+	//}
 	prev_Rects.clear();
 
 	// draw the rectangles
