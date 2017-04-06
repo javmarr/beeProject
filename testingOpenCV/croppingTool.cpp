@@ -378,8 +378,8 @@ Mat DetectInFrame(Mat frame)
 	
 	int leaving_counter = 0;
 	int entering_counter = 0;
-	Rect leaving_box = Rect(0, 0, frame.size().width, 375);
-	Rect entering_box = Rect(0, frame.size().height - 400, frame.size().width, 375);
+	Rect leaving_box = Rect(0, 0, frame.size().width, frame.size().height/2);
+	Rect entering_box = Rect(0, frame.size().height / 2, frame.size().width, frame.size().height / 2);
 	Rect intersect_entering;
 	Rect intersect_leaving;
 	bool intersecting = false;
@@ -395,6 +395,40 @@ Mat DetectInFrame(Mat frame)
 			direction_Rects.push_back("");
 		}
 		/*prev_set = true;*/
+
+
+
+
+		for (int i = 0; i < prev_Rects.size(); i++)
+		{
+			for (auto r : resRects)
+			{
+				threshold = (r.height*r.width) / 2;
+				intersecting = compare_rec(prev_Rects.at(i), r, threshold);
+				if (intersecting)
+					break;
+			}
+			if (!intersecting)
+			{
+				if (direction_Rects.at(i).find("up") != std::string::npos)
+				{
+					if (compare_rec(prev_Rects.at(i), leaving_box, threshold))
+					{
+						cout << "1 left" << endl;
+					}
+				}
+				else if (direction_Rects.at(i).find("down") != std::string::npos)
+				{
+					if (compare_rec(prev_Rects.at(i), entering_box, threshold))
+					{
+						cout << "1 entered" << endl;
+					}
+				}
+			}
+		}
+
+
+
 
 		//compare the prev and current recs
 		for (auto r : resRects)
