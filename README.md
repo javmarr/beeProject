@@ -1,5 +1,5 @@
 # Bee Detection Project
-The purpose of this project is to be able to detect bees in an image regardless or orientation (vertical, diagonal, horizontal and anything in-between), track their movement and ultimately be able to count how many bees have entered of left the hive.
+The purpose of this project is to be able to detect bees in an image regardless of orientation (vertical, diagonal, horizontal and anything in-between), track their movement and ultimately be able to count how many bees have entered of left the hive.
 
 ## Blog
 Visit our blog [here](http://compvision-project.blogspot.com/) for more detail on our progress throughout the project's lifespan
