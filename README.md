@@ -1,15 +1,15 @@
 # Bee Detection Project
-The purpose of this project is to be able to detect bees in an image regardless or orientation (vertical, diagonal, horizontal and anything in-between)
+The purpose of this project is to be able to detect bees in an image regardless or orientation (vertical, diagonal, horizontal and anything in-between), track their movement and ultimately be able to count how many bees have entered of left the hive.
 
-# Tools:
- - OpenCV library:
- ...image processing
- ...toring matricies
- ...performing matrix computations (finding the covarience, matrix transpose, principal component analysis, etc)
- - Custom cropping tool:
- ...We created our cropping tool in order to generate the sample images from a given video file
+## Blog
+Visit our blog [here](http://compvision-project.blogspot.com/) for more detail on our progress throughout the project's lifespan
+
+## OpenCV
+Mainly used for image processing, storing matricies, performing matrix operations  such as finding the covarience of a matrix, performing matrix multiplication, transposing a matric and doing a principal component analysis on the training and test data.
+
+## Custom cropping tool:
+We created a custom cropping tool in order to faciliate the creation of sample images from a given video file. It allows us to easily crop a portion of an image with predetermined width and height values.
  
- # Blog
- You can see the progress log [here](http://compvision-project.blogspot.com/)
+
  
  
