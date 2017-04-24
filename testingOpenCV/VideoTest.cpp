@@ -32,6 +32,8 @@ int main()
 
 
 	char c;
+    int leaving = 0, entering = 0;
+    
 	//capture.open("images/full video.mp4");
 	capture.open("images/14s-20s.mp4");
 	if (!capture.isOpened()) { printf("--(!)Error opening video capture\n");cin >> input; return -1; }
@@ -43,8 +45,8 @@ int main()
 			cin >> input;
 			break;
 		}
-		imshow("video", DetectInFrame(frame));
-		c  = waitKey(1);
+		imshow("video", DetectInFrame(frame, leaving, entering));
+		c  = waitKey(200);
 		
 
 	//	if (prev_frame.empty())

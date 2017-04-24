@@ -296,7 +296,7 @@ void detectAndDisplay(Mat frame)
 		cv::imshow(window_name, resized_frame);
 }
 
-Mat DetectInFrame(Mat frame)
+Mat DetectInFrame(Mat frame, int& leaving_counter, int& entering_counter)
 {
 	vector<cv::Rect> srcRects;
 	Size size(0, 0);
@@ -304,7 +304,7 @@ Mat DetectInFrame(Mat frame)
 
 	int scale = 3;
 
-	int slidefactor = 4;
+	int slidefactor = 6;
 	Mat cleanFrame = frame.clone();
 	Mat croppedImage;
 
@@ -376,8 +376,8 @@ Mat DetectInFrame(Mat frame)
 	// perform non-maximum suppression (reduce rect)
 	nms(srcRects, resRects, 0.1f);
 	
-	int leaving_counter = 0;
-	int entering_counter = 0;
+//	int leaving_counter = 0;
+//	int entering_counter = 0;
 	Rect leaving_box = Rect(0, 0, frame.size().width, frame.size().height/2);
 	Rect entering_box = Rect(0, frame.size().height / 2, frame.size().width, frame.size().height / 2);
 	Rect intersect_entering;
@@ -418,11 +418,15 @@ Mat DetectInFrame(Mat frame)
 				if (compare_rec(prev_Rects.at(i), leaving_box, threshold))
 				{
 					cout << "left" << endl;
+                    leaving_counter++;
+                    
 				}
 				//else, if it was peviously in entering, it left
 				else if (compare_rec(prev_Rects.at(i), entering_box, threshold))
 				{
-					cout << "entered" << endl;
+					
+                    cout << "entered" << endl;
+                    entering_counter++;
 				}
 				
 			}
@@ -540,14 +544,14 @@ Mat DetectInFrame(Mat frame)
 		intersect_leaving = r & leaving_box;
 
 		///option 2 (intersection) for leaving and entering
-		if (intersect_entering.area() > (r.height*r.width) / 2)
-		{
-			entering_counter++;
-		}
-		if (intersect_leaving.area() > (r.height*r.width) / 2)
-		{
-			leaving_counter++;
-		}
+//		if (intersect_entering.area() > (r.height*r.width) / 2)
+//		{
+//			entering_counter++;
+//		}
+//		if (intersect_leaving.area() > (r.height*r.width) / 2)
+//		{
+//			leaving_counter++;
+//		}
 
 		box_counter++;
 	}

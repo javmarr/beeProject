@@ -29,7 +29,7 @@ String negTestName = "images/test/neg/test-neg-img";
 void showImageFromVector(Mat image, int height) {
 	Mat temp = image.clone();
 	imshow("Image", temp.reshape(0, height));
-	char c = (char)waitKey(200);
+	char c = (char)waitKey(1);
 }
 
 int getImageHeight()

@@ -10,4 +10,5 @@ using namespace cv;
 
 void detectAndDisplay(Mat frame);
 void cropImageAndSave(Mat frame);
-Mat DetectInFrame(Mat frame);
+//Mat DetectInFrame(Mat frame, int);
+Mat DetectInFrame(Mat frame, int& leaving_counter, int& entering_counter);
